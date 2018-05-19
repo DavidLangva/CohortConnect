@@ -25,9 +25,10 @@
         </div>
       </div>
      <!-- profile cards -->
-    <div class="row">
+   
+  <div class="row">
     <% @cohorts.each do |cohort| %>
-    <div class="widget">
+    <div class="widget col">
 		<div class="wrapper">
 			<div class="top">
 				<img src="http://via.placeholder.com/150x150" class="mypic">	
@@ -38,6 +39,7 @@
 	</div> <!-- profile card ends-->
 	<% end %>
  </div>
+
 
 
 <%= link_to 'Edit', edit_cohort_path(@cohort) %> |
