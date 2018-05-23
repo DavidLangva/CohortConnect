@@ -2,13 +2,13 @@ body {
   background-color: #fff;
   color: #333;
   margin: 33px;
-  font-family: Roboto, Verdana, Arial, Helvetica, sans-serif;
+  font-family: Open Sans;
   font-size: 13px;
   line-height: 18px;
 }
 
 p, ol, ul, td {
-  font-family: verdana, arial, helvetica, sans-serif;
+  font-family: Open Sans;
   font-size: 13px;
   line-height: 18px;
 }
@@ -69,11 +69,18 @@ div {
   }
 }
 
-label {
-  display: block;
+.form-group{
+  label {
+    display: block;
+    color: #505050;
+    text-align: left;
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+  .form-control{
+    border-radius: 0;
+  }
 }
-
-
 .profile{
    .btn {
     background-color: transparent;
@@ -89,4 +96,8 @@ label {
       }
    }
    
+}
+.section {
+  padding: 70px 0;
+  position: relative;
 }
