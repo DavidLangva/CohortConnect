@@ -1,6 +1,9 @@
 class CohortsController < ApplicationController
   before_action :set_cohort, only: [:show, :edit, :update, :destroy]
-  before_action :get_role_from_url, only: [:show, :edit, :update, :destroy]
+
+  before_action :bounce_if_not_logged_in, only: [:new, :create, :update, :destroy]
+  before_action :get_role_from_url, only: [:show, :edit, :update, :destroy], if: -> { current_user }
+
 
 
   # GET /cohorts
@@ -13,7 +16,9 @@ class CohortsController < ApplicationController
   # GET /cohorts/1
   # GET /cohorts/1.json
   def show
-     @user = User.find(params[:id])
+
+     @user = User.find(cohort_params[:user_id])
+
     @cohort_id = params[:id]
     if cohort = Cohort.find_by_id(@cohort_id)
       @admins = User.joins(:cohort_users).where(cohort_users: {cohort_id: @cohort_id, user_role: "admin"}) 
@@ -25,6 +30,7 @@ class CohortsController < ApplicationController
 
   # GET /cohorts/new
   def new
+    
     @cohort = Cohort.new
   end
 
@@ -35,35 +41,40 @@ class CohortsController < ApplicationController
   # POST /cohorts
   # POST /cohorts.json
   def create
+    if @user_role == 'admin'
+        @cohort = Cohort.new(name: cohort_params[:name], start_date: cohort_params[:start_date], end_date: cohort_params[:end_date], description: cohort_params[:description])
 
-    if current_user_id = current_user.id
-      @cohort = Cohort.new(cohort_params)
-
-      respond_to do |format|
-        if @cohort.save
-          CohortUser.create(cohort_id: @cohort.id, user_id: current_user_id, user_role: 'admin')
-          format.html { redirect_to @cohort, notice: 'Cohort was successfully created.' }
-          format.json { render :show, status: :created, location: @cohort }
-        else
-          format.html { render :new }
-          format.json { render json: @cohort.errors, status: :unprocessable_entity }
+        respond_to do |format|
+          if @cohort.save
+            CohortUser.create(cohort_id: @cohort.id, user_id: current_user.id, user_role: 'admin')
+            format.js { puts 'Cohort was successfully created.' }
+            format.html { redirect_to @cohort, notice: 'Cohort was successfully created.' }
+            format.json { render :show, status: :created, location: @cohort }
+          else
+            format.html { render :new }
+            format.json { render json: @cohort.errors, status: :unprocessable_entity }
+          end
         end
-      end
     else
-      redirect_to 
+      redirect_to '/'
     end
   end
 
   # PATCH/PUT /cohorts/1
   # PATCH/PUT /cohorts/1.json
   def update
-    respond_to do |format|
-      if @cohort.update(cohort_params)
-        format.html { redirect_to @cohort, notice: 'Cohort was successfully updated.' }
-        format.json { render :show, status: :ok, location: @cohort }
-      else
-        format.html { render :edit }
-        format.json { render json: @cohort.errors, status: :unprocessable_entity }
+
+    if @user_role == 'admin'
+      respond_to do |format|
+        if @cohort.update(name: cohort_params[:name], start_date: cohort_params[:start_date], end_date: cohort_params[:end_date], description: cohort_params[:description])
+          format.js {puts "successfully updated cohort through js"}
+          format.html { redirect_to @cohort, notice: 'Cohort was successfully updated.' }
+          format.json { render :show, status: :ok, location: @cohort }
+        else
+          format.js {puts "unsuccessfully updated cohort through js"}
+          format.html { render :edit }
+          format.json { render json: @cohort.errors, status: :unprocessable_entity }
+        end
       end
     end
   end
@@ -71,10 +82,12 @@ class CohortsController < ApplicationController
   # DELETE /cohorts/1
   # DELETE /cohorts/1.json
   def destroy
-    @cohort.destroy
-    respond_to do |format|
-      format.html { redirect_to cohorts_url, notice: 'Cohort was successfully destroyed.' }
-      format.json { head :no_content }
+    if @user_role == 'admin'
+      @cohort.destroy
+      respond_to do |format|
+        format.html { redirect_to cohorts_url, notice: 'Cohort was successfully destroyed.' }
+        format.json { head :no_content }
+      end
     end
   end
 
@@ -97,9 +110,9 @@ class CohortsController < ApplicationController
   def pending_requests
     if is_admin?(params[:id], current_user.id)
       @pending_requests = GroupInvitation.where(admin_approved?: false, group_id: params[:id])
-      
+      @cohorts = []
     end
-    
+    render 'index'
   end
 
 
@@ -111,6 +124,8 @@ class CohortsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def cohort_params
-      params.require(:cohort).permit(:name, :start_date, :end_date, :cohort_id, :user_id)
+
+      params.require(:cohort).permit(:name, :start_date, :end_date, :description, :cohort_id, :user_id)
+
     end
 end

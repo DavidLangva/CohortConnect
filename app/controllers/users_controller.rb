@@ -1,17 +1,11 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
-  before_action :bounce_if_not_logged_in, only: [:home]
+  before_action :bounce_if_not_logged_in, only: [:home, :destroy]
 
   # GET /users
   # GET /users.json
   def index
     @users = User.all
-  end
-
-  # GET /users/1
-  # GET /users/1.json
-  def show
-    @user = User.find(params[:id])
   end
 
   # GET /users/new
@@ -56,14 +50,26 @@ class UsersController < ApplicationController
   # DELETE /users/1
   # DELETE /users/1.json
   def destroy
-    @user.destroy
-    respond_to do |format|
-      format.html { redirect_to users_url, notice: 'User was successfully destroyed.' }
-      format.json { head :no_content }
+    if @user.id == current_user.id
+      @user.destroy
+      respond_to do |format|
+        format.js {redirect_to '/', notice: 'Your account was successfully deleted.'}
+        format.html { redirect_to users_url, notice: 'User was successfully destroyed.' }
+        format.json { head :no_content }
+      end
+    else
+      puts "Cannot delete someone elses account"
     end
   end
 
-  
+  # GET /users/profile
+  def profile
+    if !@user = current_user
+      bounce_if_not_logged_in
+    end
+    @all_cohorts = @user.cohorts.all
+    @admin_cohorts = Cohort.joins(:cohort_users).where(cohort_users: {user_id: current_user.id, user_role: "admin"})
+  end
 
   private
     # Use callbacks to share common setup or constraints between actions.
