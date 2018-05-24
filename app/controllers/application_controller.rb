@@ -20,6 +20,10 @@ def is_admin?(cohort_id, user_id)
   return get_role(cohort_id, user_id) == 'admin'
 end
 
+def is_student?(cohort_id, user_id)
+  return get_role(cohort_id, user_id) == 'student'
+end
+
 def bounce_if_not_logged_in
   if !user_signed_in?
     redirect_to '/'
