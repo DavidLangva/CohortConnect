@@ -7,7 +7,7 @@
       <% if pending_invites.length > 0%>
           <ul class="list-group">
             <% pending_invites.each do |invite|%>
-              <li class="list-group-item">
+              <li class="list-group-item" id="<%= invite.user.id%>invite">
                 <p><%= Cohort.find_by_id(invite.group_id).name%></p>
                 <% sent_by = User.find_by_id(invite.sent_by_id)%>
                 <%= image_tag (sent_by.profile_image_link), :class => ("thumb_sm ") %>

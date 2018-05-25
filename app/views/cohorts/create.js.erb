@@ -1,1 +1,3 @@
-console.log("created")
+console.log("hit")
+$(.scroller).prepend(<%= render partial: "/shared/individual_cohort", locals:{cohort: @cohort}%>)
+

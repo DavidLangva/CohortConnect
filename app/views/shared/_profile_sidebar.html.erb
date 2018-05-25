@@ -5,16 +5,13 @@
     
 	My Cohorts
 	</div>
-		<div class="col-md-6 text-right">
+		<div class="col-md-6 text-right" >
 			<%= render "/shared/create_cohort_modal" %>
 		</div>
 	</div>
-	<div class="list-group scroller">
+	<div class="list-group scroller mine" >
  		<% cohorts.each do |cohort| %>
-  		<a href="/cohorts/<%= cohort.id%>" class="list-group-item list-group-item-action">
-  			<span style="float: left;"><%= cohort.name%></span>
-  			<span  style="float: right;"><%= cohort.start_date.strftime("%B %d, %Y")%></span>
-  		</a>
+		 <%= render partial: "/shared/individual_cohort", locals:{cohort: cohort}%>
   	<% end%>
 	</div>
 </div>

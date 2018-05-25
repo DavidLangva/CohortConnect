@@ -58,8 +58,10 @@ class GroupInvitationsController < ApplicationController
   # DELETE /group_invitations
   def destroy
     if group_invitation = GroupInvitation.find_by(user_id: group_invitation_params[:user_id], group_id: group_invitation_params[:group_id])
+      
+      @user_id = group_invitation_params[:user_id]
       group_invitation.destroy
-
+      
       respond_to do |format|
         format.js {puts "invite by js"}
       end

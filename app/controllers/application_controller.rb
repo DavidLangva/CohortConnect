@@ -43,7 +43,10 @@ class ApplicationController < ActionController::Base
     if @group_invitation.update(field_to_update => true)
       puts "successfully created an invite to cohort #{options[:group_id]} for user #{user_id}"
 
-      # current_user.send_email(:invitation_instructions, {email: email})
+      if @user_role != "admin"
+        redirect_to "/cohorts/#{options[:group_id]}"
+      end
+      
       
     end
     puts @group_invitation.errors.full_messages

@@ -28,6 +28,7 @@ class CohortsController < ApplicationController
     respond_to do |format|
       if @cohort.save
         CohortUser.create(cohort_id: @cohort.id, user_id: current_user.id, user_role: 'admin')
+        
         format.js { puts 'Cohort was successfully created.' }
       else
         format.js { puts 'Cohort was not created.' }
