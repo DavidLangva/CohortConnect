@@ -31,7 +31,6 @@ class GroupInvitationsController < ApplicationController
 
     respond_to do |format|
         format.js { puts "successfully created invite " }
-
     end
 
     # if current_user && user_cohort_association = CohortUser.where(cohort_id: group_invitation_params[:group_id], user_id: current_user.id)[0]
